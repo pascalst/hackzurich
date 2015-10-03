@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "hackzurich"
+    },
+    "hackzurich": {
+      "applicationId": "VD3j3OBU9W17spOE1gyrjZS2QiH1hIkmp1bRELM8"
+    }
+  }
+}
