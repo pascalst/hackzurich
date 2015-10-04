@@ -1,6 +1,8 @@
 // Register cloud functions
 Parse.Cloud.define("getFbUserData", getFbUserData);
 Parse.Cloud.define("getPersonality", getPersonality);
+Parse.Cloud.define("getPersonalitySummary", getPersonalitySummary);
+Parse.Cloud.define("insightsToScores", insightsToScores);
 
 Parse.Cloud.define("recommendByScores", recommendByScores);
 Parse.Cloud.define("vehiclesByScores", vehiclesByScores);
@@ -16,6 +18,35 @@ function getFbUserData(request, response) {
   });
 }
 
+function insightsToScores(request, response) {
+  var dic = request.params.traits;
+  var vehiculeScores = {
+    "family" : 100*(dic["Cautiousness"]+dic["Dutifulness"])/2,
+    "sport" : 100*(dic["Adventurousness"]+dic["Activity level"]+dic["Assertiveness"]+dic["Excitement-seeking"]+(1 - dic["Modesty"])+dic["Excitement"])/6,
+    "eco" : 100*(dic["Emotionality"]+dic["Authority-challenging"]+dic["Altruism"]+dic["Cooperation"])/4,
+    "design" : 100*(dic["Artistic interests"]+dic["Imagination"]+dic["Intellect"]+dic["Achievement striving"]+dic["Orderliness"])/5,
+    "offroad" : 100*(dic["Adventurousness"]+(1 - dic["Self-discipline"])+dic["Activity level"])/3,
+    "price" : 100*(1 - dic["Cautiousness"]),
+  }
+
+for (var item in vehiculeScores) {
+  if vehiculeScores[item] >= 80 {
+    vehiculeScores[item] = 5;
+  }
+  else if vehiculeScores[item] >= 60 {
+    vehiculeScores[item] = 4
+  }
+  else if vehiculeScores[item] >= 40 {
+    vehiculeScores[item] = 3
+  }
+  else if vehiculeScores[item] >= 20 {
+    vehiculeScores[item] = 2
+  } else {
+    vehiculeScores[item] = 1
+  }
+  response.success(vehiculeScores);
+}
+
 function getPersonality(request, response) {
   getFbUserDataHelper(request.user).then(getBluemixPersonality).then(function(insightsData) {
     response.success(insightsData);
@@ -24,8 +55,44 @@ function getPersonality(request, response) {
   });
 }
 
-function getBluemixPersonality(userData) {
-  // console.log(userData);
+function getPersonalitySummary(request, response) {
+  getFbUserDataHelper(request.user).then(getBluemixPersonality).then(function(insightsData) {
+    response.success(summaryOfInsights(insightsData));
+  }, function(error) {
+    response.error(error);
+  });
+}
+
+// dic = {}
+// root = data["tree"]["children"]
+//
+// # Every feature is matched to its percentage
+// for category in root[0]["children"][0]["children"]:
+// 	for feature in category["children"]:
+//          dic[feature["name"]]=feature["percentage"]
+// for i in range(1,3) :
+//     for feature in root[i]["children"][0]["children"]:
+//          dic[feature["name"]]=feature["percentage"]
+
+function summaryOfInsights(insightsData) {
+  var map = {},
+      root = insightsData["tree"]["children"];
+  _.each(root[0]["children"][0]["children"], function(category) {
+    _.each(category["children"], function(feature) {
+      map[feature["name"]] = feature["percentage"];
+    });
+  });
+  // for (var i = 1; i < 3; i++) {
+  //   _.each(root[i]["children"][0]["children"], function(feature) {
+  //     map[feature["name"]] = feature["percentage"];
+  //   });
+  // }
+  return map;
+}
+
+function getBluemixPersonality(userId, userData) {
+  //
+
   return Parse.Cloud.httpRequest({
     method: 'POST',
     url: "https://3d560c72-b683-4bb1-b15e-72aef2f1bd7a:ACBCbBNRTXm3@gateway.watsonplatform.net/personality-insights/api/v2/profile",

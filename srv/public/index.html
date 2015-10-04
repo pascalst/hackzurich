@@ -71,9 +71,10 @@
           </h2>
           <div id="console"></div>
         </div>
-        <div class="jumbotron">
+        <table id="results" class="table"></table>
+        <!-- <div id="results" class="jumbotron">
 
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -98,7 +99,19 @@
         $("#login").click(function() {
           Parse.FacebookUtils.logIn("user_posts", {
             success: function(user) {
-              console.log("Logged in as: ", user)
+              console.log("Logged in as: ", user);
+
+              Parse.Cloud.run('getPersonalitySummary', null, {
+                success: function(insightsData) {
+                  $("#results").append("<tr><th>Trait</th><th>Value</th></tr>")
+                  for (var trait in insightsData) {
+                    $("#results").append("<tr><td>" + trait + "</td><td>" + insightsData[trait] + "</td></tr>")
+                  }
+                },
+                error: function(error) {
+                  console.log("Error: ", error);
+                }
+              });
             },
             error: function(user, error) {
               console.log("Error: ", error);
