@@ -1,9 +1,25 @@
 // Register cloud functions
+Parse.Cloud.define("fbtest", fbtest);
+
 Parse.Cloud.define("recommendByScores", recommendByScores);
 Parse.Cloud.define("vehiclesByScores", vehiclesByScores);
 
 // Actual implementation
 var _ = require('underscore');
+
+function fbtest(request, response) {
+  // return response.success(request.user);
+  Parse.Cloud.httpRequest({
+    url: "https://graph.facebook.com/me/posts",
+    params: {
+      "access_token": request.user.get("authData").facebook.access_token
+    }
+  }).then(function(httpResponse) {
+    response.success(httpResponse.text);
+  }, function(httpResponse) {
+    response.error("failed to talk to the Graph API");
+  });
+}
 
 // Returns the vehicle best matching the requested score set.
 function recommendByScores(request, response) {
@@ -59,7 +75,7 @@ function getVehiclesByScores(scores) {
 // Helper functions
 function getVehiclesByScoreType(scoreType, score) {
   return Parse.Cloud.httpRequest({
-    url: "http://api.hackzurich.amag.ch/hackzurich/score/" + scoreType + "/" + score + "/overview.json",
+    url: "http://api.hackzurich.amag.ch/hackzurich/score/" + scoreType + "/" + score + ".json",
   }).then(function(httpResponse) {
     // success
     return Parse.Promise.as(httpResponse.data.vehicles);
