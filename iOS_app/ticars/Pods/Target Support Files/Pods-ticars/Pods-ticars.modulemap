@@ -1,0 +1,6 @@
+framework module Pods_ticars {
+  umbrella header "Pods-ticars-umbrella.h"
+
+  export *
+  module * { export * }
+}
