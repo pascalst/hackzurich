@@ -20,12 +20,12 @@ for i in range(1,3) :
 # Match personality types to vehicule features
 
 vehiculeScores = {
-	"family" : 100*(dic["Cautiousness"]+dic["Dutifulness"]+dic["Practicality"])/3,
+	"family" : 100*(dic["Cautiousness"]+dic["Dutifulness"])/2,
 	"sport" : 100*(dic["Adventurousness"]+dic["Activity level"]+dic["Assertiveness"]+dic["Excitement-seeking"]+(1 - dic["Modesty"])+dic["Excitement"])/6,
     "eco" : 100*(dic["Emotionality"]+dic["Authority-challenging"]+dic["Altruism"]+dic["Cooperation"])/4,
-    "design" : 100*(dic["Artistic interests"]+dic["Imagination"]+dic["Intellect"]+dic["Achievement striving"]+dic["Orderliness"]+dic["Self-expression"])/6,
-    "offroad" : 100*(dic["Adventurousness"]+(1 - dic["Self-discipline"])+dic["Activity level"]+dic["Challenge"])/4,
-    "price" : 100*((1 - dic["Cautiousness"])+dic["Conservation"])/2,
+    "design" : 100*(dic["Artistic interests"]+dic["Imagination"]+dic["Intellect"]+dic["Achievement striving"]+dic["Orderliness"])/5,
+    "offroad" : 100*(dic["Adventurousness"]+(1 - dic["Self-discipline"])+dic["Activity level"])/3,
+    "price" : 100*(1 - dic["Cautiousness"]),
 }
 
 for item in vehiculeScores :
@@ -41,12 +41,9 @@ for item in vehiculeScores :
         vehiculeScores[item] = 1       
             
 
-
-
-
+#print vehiculeScores
 print vehiculeScores
 
-#print vehiculeScores
 
 
 
