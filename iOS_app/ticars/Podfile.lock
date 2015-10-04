@@ -1,0 +1,13 @@
+PODS:
+  - FontAwesome+iOS (0.1.4)
+  - PPiAwesomeButton (1.5.2):
+    - FontAwesome+iOS
+
+DEPENDENCIES:
+  - PPiAwesomeButton
+
+SPEC CHECKSUMS:
+  FontAwesome+iOS: 9070b682a9255ca0fdc34bcfb129ad0ba2b73b87
+  PPiAwesomeButton: 16f7279582fd36f65186b24b83ef876217363eb5
+
+COCOAPODS: 0.38.2
