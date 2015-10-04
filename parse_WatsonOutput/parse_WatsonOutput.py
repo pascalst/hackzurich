@@ -18,18 +18,35 @@ for i in range(1,3) :
          dic[feature["name"]]=feature["percentage"]	
 
 # Match personality types to vehicule features
+
 vehiculeScores = {
-	"family" : 5*int(dic["Cautiousness"]*dic["Dutifulness"]*dic["Practicality"])
-	"port" : 5*int(dic["Adventurousness"]*dic["Activity level"]*dic["Assertiveness"]*dic["Excitement-seeking"]*(1 - dic["Modesty"])*dic["Excitement"])
-    "eco" : 5*int(dic["Emotionality"]*dic["Authority-challenging"]*dic["Altruism"]*dic["Cooperation"])
-    "design" : 5*int(dic["Artistic interests"]*dic["Imagination"]*dic["Intellect"]*dic["Achievement striving"]*dic["Orderliness"]*dic["Self Expression"])
-    "offroad"] : 5*int(dic["Adventurousness"]*(1 - dic[Self-discipline])*dic["Activity level"]*dic["Challenge"])
-    "price" : 5*int((1 - dic["Cautiousness"])*dic["Consevation"])
+	"family" : 100*(dic["Cautiousness"]+dic["Dutifulness"]+dic["Practicality"])/3,
+	"sport" : 100*(dic["Adventurousness"]+dic["Activity level"]+dic["Assertiveness"]+dic["Excitement-seeking"]+(1 - dic["Modesty"])+dic["Excitement"])/6,
+    "eco" : 100*(dic["Emotionality"]+dic["Authority-challenging"]+dic["Altruism"]+dic["Cooperation"])/4,
+    "design" : 100*(dic["Artistic interests"]+dic["Imagination"]+dic["Intellect"]+dic["Achievement striving"]+dic["Orderliness"]+dic["Self-expression"])/6,
+    "offroad" : 100*(dic["Adventurousness"]+(1 - dic["Self-discipline"])+dic["Activity level"]+dic["Challenge"])/4,
+    "price" : 100*((1 - dic["Cautiousness"])+dic["Conservation"])/2,
 }
+
+for item in vehiculeScores :
+    if vehiculeScores[item] >= 80 :
+        vehiculeScores[item] = 5
+    elif vehiculeScores[item] >= 60 :
+        vehiculeScores[item] = 4 
+    elif vehiculeScores[item] >= 40 :
+        vehiculeScores[item] = 3 
+    elif vehiculeScores[item] >= 20 :
+        vehiculeScores[item] = 2
+    else :
+        vehiculeScores[item] = 1       
+            
+
 
 
 
 print vehiculeScores
+
+#print vehiculeScores
 
 
 
