@@ -1,5 +1,6 @@
 // Register cloud functions
-Parse.Cloud.define("fbtest", fbtest);
+Parse.Cloud.define("getFbUserData", getFbUserData);
+Parse.Cloud.define("getPersonality", getPersonality);
 
 Parse.Cloud.define("recommendByScores", recommendByScores);
 Parse.Cloud.define("vehiclesByScores", vehiclesByScores);
@@ -7,17 +8,57 @@ Parse.Cloud.define("vehiclesByScores", vehiclesByScores);
 // Actual implementation
 var _ = require('underscore');
 
-function fbtest(request, response) {
+function getFbUserData(request, response) {
+  getFbUserDataHelper(request.user).then(function(userData) {
+    response.success(userData);
+  }, function(error) {
+    response.error(error);
+  });
+}
+
+function getPersonality(request, response) {
+  getFbUserDataHelper(request.user).then(getBluemixPersonality).then(function(insightsData) {
+    response.success(insightsData);
+  }, function(error) {
+    response.error(error);
+  });
+}
+
+function getBluemixPersonality(userData) {
+  // console.log(userData);
+  return Parse.Cloud.httpRequest({
+    method: 'POST',
+    url: "https://3d560c72-b683-4bb1-b15e-72aef2f1bd7a:ACBCbBNRTXm3@gateway.watsonplatform.net/personality-insights/api/v2/profile",
+    headers: {
+      'Content-Type': 'text/plain'
+    },
+    body: userData
+  }).then(function(httpResponse) {
+    return Parse.Promise.as(httpResponse.data);
+  }, function(httpResponse) {
+    return Parse.Promise.error("couldn't talk to IBM Bluemix API: " + JSON.stringify(httpResponse));
+  });
+}
+
+function getFbUserDataHelper(user) {
   // return response.success(request.user);
-  Parse.Cloud.httpRequest({
+  return Parse.Cloud.httpRequest({
     url: "https://graph.facebook.com/me/posts",
     params: {
-      "access_token": request.user.get("authData").facebook.access_token
+      "access_token": user.get("authData").facebook.access_token,
+      "limit": 200
     }
   }).then(function(httpResponse) {
-    response.success(httpResponse.text);
+    var posts = httpResponse.data.data
+        userData = "";
+    _.each(posts, function(post) {
+      if (_.has(post, "message")) {
+        userData += post.message + "\n";
+      }
+    });
+    return Parse.Promise.as(userData);
   }, function(httpResponse) {
-    response.error("failed to talk to the Graph API");
+    return Parse.Promise.error("failed to talk to the Graph API");
   });
 }
 
