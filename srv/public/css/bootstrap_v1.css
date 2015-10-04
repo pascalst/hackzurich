@@ -13,7 +13,7 @@ html {
 body {
   margin: 0;
   height: 100%;
-  background: url('/Users/PS/Code/GitHub/Immoprice/red_car_204675.jpg');
+  background: url('img/red_car_204675.jpg');
   background-size: 1440px 800px;
   opacity: 0.9;
   background-color: #fcf8e3;
